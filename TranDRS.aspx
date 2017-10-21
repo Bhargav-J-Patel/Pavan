@@ -28,7 +28,7 @@
         var prm = Sys.WebForms.PageRequestManager.getInstance();
 
         prm.add_endRequest(function () {
-            $('input,.select').on('keypress', function (eInner) {
+            $('input,.select,button').on('keypress', function (eInner) {
                 if (eInner.keyCode == 13) //if its a enter key
                 {
                     var tabindex = $(this).attr('tabindex');
@@ -104,6 +104,13 @@
                 //                }
             }
         }
+        function AWBScan() {
+
+
+
+        }
+
+
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
@@ -392,13 +399,13 @@
                             <td style="padding-left: 40px;">
                                 <asp:TextBox runat="server" class="txtbox bgcolrred" ID="TxtAWBNoPopup"
                                     onkeypress="return validateKeyPress(event,validNums)" Style="text-align: right"
-                                    Width="160px" onfocus="this.select();" />
+                                    Width="160px" onfocus="this.select();" onchange="AWBScan();" TabIndex="30" />
                             </td>
                         </tr>
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-default">Submite & Close</button>
+                    <button type="button" data-dismiss="modal" class="btn btn-default" tabindex="31">Submite & Close</button>
                 </div>
             </div>
         </div>
