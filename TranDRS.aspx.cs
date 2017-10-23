@@ -85,12 +85,20 @@ public partial class TranDRS : System.Web.UI.Page
                     if (Request.QueryString["cid"] != null)
                     {
                         thpcs.Visible = true;
-                        tdpcs.Visible = true;
                         thweight.Visible = true;
-                        tdweight.Visible = true;
                         threcv.Visible = true;
-                        tdrecv.Visible = true;
-                        tdbtnad.Visible = true;
+
+
+                        tdweight.Attributes.Remove("style");
+                        tdpcs.Attributes.Remove("style");
+                        tdrecv.Attributes.Remove("style");
+                        tdbtnad.Attributes.Remove("style");
+                        
+                        //tdweight.Visible = true;
+                        //tdpcs.Visible = true;
+                        //tdrecv.Visible = true;
+                        //tdbtnad.Visible = true;
+
                         ds = cn.RunSql("sp_listDRS 'c','" + Request.Cookies["branchid"].Value + "','" + Request.QueryString["id"] + "','" + Request.QueryString["cid"] + "'", "select");
                         txtweight.Text = ds.Tables[0].Rows[0]["cweight"] != DBNull.Value ? ds.Tables[0].Rows[0]["cweight"].ToString() : "";
                         txtawbno.Text = ds.Tables[0].Rows[0]["nAWBNo"] != DBNull.Value ? ds.Tables[0].Rows[0]["nAWBNo"].ToString() : "";
@@ -234,7 +242,7 @@ public partial class TranDRS : System.Web.UI.Page
             {
                 if (Request.QueryString["cid"] != null)
                 {
-//                    ds = cn.RunSql("sp_addDRSTran 'PUCU','" + txtdrsno.Text + "','" + txtdate.Text + "','" + HifRoute.Value + "','" + HifBoy.Value + "','" + HifLoc.Value + "','" + txtorigin.Text + "','" + txtbookdate.Text + "','" + txtweight.Text + "','" + txtawbno.Text + "','" + Request.Cookies["branchid"].Value + "','" + Request.QueryString["id"] + "','" + Request.QueryString["cid"] + "'", "pucu");
+                    //                    ds = cn.RunSql("sp_addDRSTran 'PUCU','" + txtdrsno.Text + "','" + txtdate.Text + "','" + HifRoute.Value + "','" + HifBoy.Value + "','" + HifLoc.Value + "','" + txtorigin.Text + "','" + txtbookdate.Text + "','" + txtweight.Text + "','" + txtawbno.Text + "','" + Request.Cookies["branchid"].Value + "','" + Request.QueryString["id"] + "','" + Request.QueryString["cid"] + "'", "pucu");
                     ds = cn.RunSql("sp_addDRSTran 'PUCU','" + txtdrsno.Text + "','" + txtdate.Text + "','" + HifRoute.Value + "','" + HifBoy.Value + "','" + HifLoc.Value + "','" + txtorigin.Text + "','" + txtbookdate.Text + "','" + txtweight.Text + "','" + txtpcs.Text + "','" + txtawbno.Text + "','" + Request.Cookies["branchid"].Value + "','" + HIDPFID.Value + "','" + Request.QueryString["cid"] + "','0','" + TxtRecvrNm.Text + "','" + Request.Cookies["loginid"].Value + "'", "pucu");
                     Response.Redirect("TranDRS.aspx?id=" + ds.Tables[0].Rows[0][0] + "");
                 }
@@ -639,7 +647,7 @@ public partial class TranDRS : System.Web.UI.Page
                 if (ds.Tables[0].Rows[0][0].ToString() == "Enter Weight and Pcs")
                 {
                     //TxtRecvrNm.Focus();
-                   // txtpcs.Text = "1";
+                    // txtpcs.Text = "1";
                 }
                 else
                 {

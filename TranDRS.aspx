@@ -105,11 +105,125 @@
             }
         }
         function AWBScan() {
+            var TxtAWBNoPopup = document.getElementById("<%=TxtAWBNoPopup.ClientID %>")
+            var lastindex = ($("#tblawbno tr").length - 1).toString();
+            var indexno = $("#tblawbno tr").eq(lastindex).find('td').eq(2).find('input').val();
+            indexno = parseFloat(indexno || 0) + 1;
+            if (TxtAWBNoPopup.value != "") {
+                var html = '<tr>' +
+                                '<td><span id="span_' + indexno + '">' + TxtAWBNoPopup.value + '</span>  </td>' +
+                                '<td><button type="button" onclick="RemoveRow(' + indexno + ');" style="border:none; background:none;"><img src="assets/img/delete.png" style="border-width:0px;"></button></td>' +
+                                '<td style="display:none;"><input type="hidden" id="hfidrow_' + indexno + '" value="' + indexno + '"></td>' +
+                                '</tr>'
+                $(html).appendTo($("#tblawbno"))
+                TxtAWBNoPopup.value = "";
+                TxtAWBNoPopup.focus();
 
+            }
+            else {
+                alert("Please Select AWB No! !");
+            }
+        }
+        function RemoveRow(indexno) {
+            $('#tblawbno tr').has('input[id="hfidrow_' + indexno + '"]').remove();
+            //alert(indexno);
+        }
+        function submiteAWBno() {
+            var Child = "";
+            for (var i = 0; i < $("#tblawbno tr").length - 1; i++) {
+                Child += $("#tblawbno tr").eq(i + 1).find('td').eq(0).find('span').html() + "¥";
+                //alert($("#tblawbno tr").eq(i + 1).find('td').eq(0).find('span').html());
+            }
+            var txtdrsno = document.getElementById("<%=txtdrsno.ClientID %>");
+            var txtdate = document.getElementById("<%=txtdate.ClientID %>");
+            var HifRoute = document.getElementById("<%=HifRoute.ClientID %>");
+            var HifBoy = document.getElementById("<%=HifBoy.ClientID %>");
+            var HifLoc = document.getElementById("<%=HifLoc.ClientID %>");
+            var txtorigin = document.getElementById("<%=txtorigin.ClientID %>");
+            var txtbookdate = document.getElementById("<%=txtbookdate.ClientID %>");
+            var txtweight = document.getElementById("<%=txtweight.ClientID %>");
+            var txtpcs = document.getElementById("<%=txtpcs.ClientID %>");
+            var txtawbno = document.getElementById("<%=txtawbno.ClientID %>");
+            var HIDPFID = document.getElementById("<%=HIDPFID.ClientID %>");
+            var TxtRecvrNm = document.getElementById("<%=TxtRecvrNm.ClientID %>");
 
+            if (Child != "") {
+                $.ajax({
+                    type: "POST",
+                    url: "ListPage.asmx/AWBScanDRS",
+                    data: "{'txtdrsno':'" + txtdrsno.value + "','txtdate':'" + txtdate.value + "','HifRoute':'" + HifRoute.value + "','HifBoy':'" + HifBoy.value + "','HifLoc':'" + HifLoc.value + "','txtorigin':'" + txtorigin.value + "','txtbookdate':'" + txtbookdate.value + "','txtweight':'" + txtweight.value + "','txtpcs':'" + txtpcs.value + "','txtawbno':'" + txtawbno.value + "','HIDPFID':'" + HIDPFID.value + "','TxtRecvrNm':'" + TxtRecvrNm.value + "','Child':'" + Child + "'}",
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.d.Msg == "") {
+                            $("#tblawbno > tbody").html("");
+                            location.href = "TranDRS.aspx?ID=" + data.d.PNID + "&E=1";
+                        }
+                        else {
+                            alert(data.d.Msg);
+                        }
 
+                    }
+                });
+            }
         }
 
+        function OpenPop() {
+
+            var HifRoute = document.getElementById("<%=HifRoute.ClientID %>");
+            var HifBoy = document.getElementById("<%=HifBoy.ClientID %>");
+            var HifLoc = document.getElementById("<%=HifLoc.ClientID %>");
+            var txtroute = document.getElementById("<%=txtroute.ClientID %>");
+            var txtboy = document.getElementById("<%=txtboy.ClientID%>");
+            var txtlocation = document.getElementById("<%=txtlocation.ClientID%>");
+
+
+            if (HifRoute.value == "") {
+                alert("Please Select Route ! !");
+                txtroute.focus();
+            }
+            else if (HifBoy.value == "") {
+                alert("Please Select Agent / Boy ! !");
+                txtboy.focus();
+            }
+            else if (HifLoc.value == "") {
+                alert("Please Select Location ! !");
+                txtlocation.focus();
+            }
+            else {
+                $("#ModelAWB").modal('show');
+            }
+        }
+        function MainValidate() {
+
+            var HifRoute = document.getElementById("<%=HifRoute.ClientID %>");
+            var HifBoy = document.getElementById("<%=HifBoy.ClientID %>");
+            var HifLoc = document.getElementById("<%=HifLoc.ClientID %>");
+            var txtroute = document.getElementById("<%=txtroute.ClientID %>");
+            var txtboy = document.getElementById("<%=txtboy.ClientID%>");
+            var txtlocation = document.getElementById("<%=txtlocation.ClientID%>");
+
+
+            if (HifRoute.value == "") {
+                alert("Please Select Route ! !");
+                txtroute.focus();
+                return false;
+            }
+            else if (HifBoy.value == "") {
+                alert("Please Select Agent / Boy ! !");
+                txtboy.focus();
+                return false;
+            }
+            else if (HifLoc.value == "") {
+                alert("Please Select Location ! !");
+                txtlocation.focus();
+                return false;
+            }
+            else {
+                return true;
+            }
+
+        }
 
     </script>
 </asp:Content>
@@ -264,9 +378,9 @@
                                                     <th runat="server" id="threcv" visible="false">Receiver
                                                     </th>
                                                 </th>
+                                                <th></th>
                                                 <th rowspan="2" style="padding-top: 10px; padding-left: 80px;">
-                                                    <button type="button" id="BtnMultiAWB" class="btn btn-info" style="width: 120px;"
-                                                        data-toggle="modal" data-target="#ModelAWB">
+                                                    <button type="button" id="BtnMultiAWB" class="btn btn-info" style="width: 120px;" onclick="OpenPop();">
                                                         Scan AWB</button>
                                                     <%--<asp:Button ID="BtnMultiAWB" Text="Scan AWB" runat="server" class="btn btn-info" 
                                                         Width="70px" />--%>
@@ -282,17 +396,17 @@
                                                 </td>
 
 
-                                                <td style="width: 100px;" runat="server" id="tdweight" visible="false">
+                                                <td runat="server" id="tdweight" style="display: none;" width="100px">
                                                     <asp:TextBox runat="server" ID="txtweight" class="txtbox bgcolrred" TabIndex="8"
                                                         onkeypress="return validateKeyPress(event,validNums)" Style="text-align: right;" Width="90px" onfocus="this.select();" />
                                                 </td>
-                                                <td style="width: 110px;" runat="server" id="tdpcs" visible="false">
+                                                <td runat="server" id="tdpcs" style="display: none;" width="110px">
                                                     <asp:TextBox runat="server" ID="txtpcs" class="txtbox bgcolrred" TabIndex="9" onkeypress="return validateKeyPress(event,validNums)"
                                                         Style="text-align: right;" Width="100px" onlostfocus="changePcs();"
                                                         onfocus="this.select();" OnTextChanged="txtpcs_TextChanged"
                                                         ClientIDMode="Static" />
                                                 </td>
-                                                <td runat="server" id="tdrecv" visible="false">
+                                                <td runat="server" id="tdrecv" style="display: none;">
                                                     <asp:TextBox runat="server" ID="TxtRecvrNm" class="txtbox bgcolrblue" TabIndex="7"
                                                         Width="210px" OnTextChanged="TxtRecvrNm_TextChanged" />
                                                     <cc1:AutoCompleteExtender ServiceMethod="Searchrecv" MinimumPrefixLength="1" CompletionInterval="100"
@@ -304,7 +418,7 @@
                                                         ErrorMessage="&lt;img src='assets/img/writing-icon.jpg' title='' alt='View' border='0'/&gt;"
                                                         InitialValue="" ValidationGroup="Main"></asp:RequiredFieldValidator>
                                                 </td>
-                                                <td id="tdbtnad" runat="server" visible="false">
+                                                <td id="tdbtnad" runat="server" style="display: none;">
                                                     <asp:ImageButton ID="ImgBtnAdd" ImageUrl="assets/img/add.png" runat="server" TabIndex="8"
                                                         ValidationGroup="Child" OnClick="ImgBtnAdd_Click" />
                                                 </td>
@@ -365,11 +479,15 @@
                                             <asp:ListItem Value="Yes">Yes</asp:ListItem>
                                         </asp:DropDownList>
                                         <asp:Button ID="btnsubmit" Text="Submit" runat="server" class="btn btn-info" OnClick="btnsubmit_Click"
-                                            ValidationGroup="Main" TabIndex="10" />
+                                            OnClientClick="return MainValidate()" TabIndex="10" />
+
+                                        <%--<button type="button" class="btn btn-default" tabindex="10" runat="server" onserverclick="btnsubmit_Click">Submite & Close</button>--%>
+
+
                                         <asp:Button ID="btnprint" Text="Print" runat="server" class="btn btn-sm btn-purple resetbtn"
-                                            TabIndex="11" OnClick="btnprint_Click" OnClientClick="SetTarget();" />
+                                            TabIndex="11" OnClick="btnprint_Click" OnClientClick="SetTarget();" CausesValidation="false" />
                                         <asp:Button ID="btnreset" Text="Reset" runat="server" class="btn resetbtn" TabIndex="12"
-                                            OnClick="btnreset_Click" />
+                                            OnClick="btnreset_Click" CausesValidation="false" />
                                     </td>
                                 </tr>
                             </table>
@@ -383,33 +501,43 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="ModelAWB" role="dialog">
-        <div class="modal-dialog modal-sm vertical-align-center" style="width: 70%;">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Scan AWB No</h4>
-                </div>
-                <div class="modal-body" style="height: 420px;">
-                    <table>
-                        <tr>
-                            <td>AWB No
-                            </td>
-                            <td style="padding-left: 40px;">
-                                <asp:TextBox runat="server" class="txtbox bgcolrred" ID="TxtAWBNoPopup"
-                                    onkeypress="return validateKeyPress(event,validNums)" Style="text-align: right"
-                                    Width="160px" onfocus="this.select();" onchange="AWBScan();" TabIndex="30" />
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" data-dismiss="modal" class="btn btn-default" tabindex="31">Submite & Close</button>
+    <form>
+        <div class="modal fade" id="ModelAWB" role="dialog">
+            <div class="modal-dialog modal-sm vertical-align-center" style="width: 70%;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Scan AWB No</h4>
+                    </div>
+                    <div class="modal-body" style="height: 420px; overflow: scroll;">
+                        <table>
+                            <tr>
+                                <td>AWB No
+                                </td>
+                                <td style="padding-left: 40px;">
+                                    <asp:TextBox runat="server" class="txtbox bgcolrred" ID="TxtAWBNoPopup"
+                                        onkeypress="return validateKeyPress(event,validNums)" Style="text-align: right"
+                                        Width="160px" onfocus="this.select();" onchange="AWBScan();" TabIndex="30" />
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+                        <table id="tblawbno" class="table table-bordered table-hover" style="width: 400px;">
+                            <thead>
+                                <tr>
+                                    <th>AWB No
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" tabindex="31" onclick="submiteAWBno();">Submite & Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-
+    </form>
 
 </asp:Content>

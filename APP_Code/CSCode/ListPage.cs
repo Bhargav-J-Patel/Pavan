@@ -23,6 +23,8 @@ public class ListPage : System.Web.Services.WebService
 
         public string zone, country, location, product, destination, customer, contact, route, courier, exception, charge, inward, issue, drs, manifest, pod, cash, credit;
 
+        public string PNID { get; set; }
+        public string Msg { get; set; }
     }
 
     public class ListAll
@@ -171,7 +173,7 @@ public class ListPage : System.Web.Services.WebService
         DataSet DS = new DataSet();
         SqlPavanCourier CN = new SqlPavanCourier();
 
-        DS = CN.RunSql("SP_ListMasterLocation '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','"+ HttpContext.Current.Request.Cookies["branchid"].Value.ToString() +"'", "List");
+        DS = CN.RunSql("SP_ListMasterLocation '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + HttpContext.Current.Request.Cookies["branchid"].Value.ToString() + "'", "List");
 
 
         if (DS.Tables.Count > 0)
@@ -1102,7 +1104,7 @@ public class ListPage : System.Web.Services.WebService
         DataSet DS = new DataSet();
         SqlPavanCourier CN = new SqlPavanCourier();
 
-        DS = CN.RunSql("SP_ListTranLoadRecvd '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','"+ HttpContext.Current.Request.Cookies["loginid"].Value.ToString() +"'", "List");
+        DS = CN.RunSql("SP_ListTranLoadRecvd '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','" + HttpContext.Current.Request.Cookies["loginid"].Value.ToString() + "'", "List");
 
 
         if (DS.Tables.Count > 0)
@@ -1153,7 +1155,7 @@ public class ListPage : System.Web.Services.WebService
         DataSet DS = new DataSet();
         SqlPavanCourier CN = new SqlPavanCourier();
 
-        DS = CN.RunSql("SP_ListTranPOD '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','"+ HttpContext.Current.Request.Cookies["loginid"].Value.ToString() +"'", "List");
+        DS = CN.RunSql("SP_ListTranPOD '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','" + HttpContext.Current.Request.Cookies["loginid"].Value.ToString() + "'", "List");
 
 
         if (DS.Tables.Count > 0)
@@ -1270,7 +1272,7 @@ public class ListPage : System.Web.Services.WebService
         DataSet DS = new DataSet();
         SqlPavanCourier CN = new SqlPavanCourier();
 
-        DS = CN.RunSql("SP_ListTranCashBooking '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','"+ HttpContext.Current.Request.Cookies["loginid"].Value.ToString() +"'", "List");
+        DS = CN.RunSql("SP_ListTranCashBooking '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','" + HttpContext.Current.Request.Cookies["loginid"].Value.ToString() + "'", "List");
 
 
         if (DS.Tables.Count > 0)
@@ -1366,7 +1368,7 @@ public class ListPage : System.Web.Services.WebService
         myClass m = new myClass();
 
 
-        DS = CN.RunSql("SP_ListTranDRSRunsheetImage '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','"+ HttpContext.Current.Request.Cookies["loginid"].Value.ToString() +"'", "List");
+        DS = CN.RunSql("SP_ListTranDRSRunsheetImage '" + displayLength + "','" + displayStart + "','" + sortCol + "','" + sortDir + "','" + search + "','" + m.BranchID + "','" + HttpContext.Current.Request.Cookies["loginid"].Value.ToString() + "'", "List");
 
 
         if (DS.Tables.Count > 0)
@@ -1416,7 +1418,32 @@ public class ListPage : System.Web.Services.WebService
         return totalCount;
     }
 
+    [WebMethod(EnableSession = true)]
+    public myClass AWBScanDRS(string txtdrsno, string txtdate, string HifRoute, string HifBoy, string HifLoc, string txtorigin, string txtbookdate, string txtweight, string txtpcs, string txtawbno, string HIDPFID, string TxtRecvrNm, string Child)
+    {
+        myClass m = new myClass();
 
+        DataSet DS = new DataSet();
+        SqlPavanCourier CN = new SqlPavanCourier();
+
+        try
+        {
+            DS = CN.RunSql("sp_addDRSTran 'AWBScan','" + txtdrsno + "','" + txtdate + "','" + HifRoute + "','" + HifBoy + "','" + HifLoc + "','" + txtorigin + "','" + txtbookdate + "','" + txtweight + "','" + txtpcs + "','" + txtawbno + "','" + HttpContext.Current.Request.Cookies["branchid"].Value + "','" + HIDPFID + "','','0','" + TxtRecvrNm + "','" + HttpContext.Current.Request.Cookies["loginid"].Value + "','" + Child + "'", "puci");
+            if (DS.Tables.Count > 0)
+            {
+                if (DS.Tables[0].Rows.Count > 0)
+                {
+                    m.PNID = DS.Tables[0].Rows[0][0] != DBNull.Value ? DS.Tables[0].Rows[0][0].ToString() : "";
+                    m.Msg = "";
+                }
+            }
+        }
+        catch(Exception ex)
+        {
+            m.Msg = ex.Message;
+        }
+        return m;
+    }
 
 
 }
