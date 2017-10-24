@@ -148,6 +148,8 @@
             var TxtRecvrNm = document.getElementById("<%=TxtRecvrNm.ClientID %>");
 
             if (Child != "") {
+                $("#btnscanawb").attr("disabled", "disabled");
+                $("#btnscanawb").html("Submitting...");
                 $.ajax({
                     type: "POST",
                     url: "ListPage.asmx/AWBScanDRS",
@@ -161,6 +163,8 @@
                         }
                         else {
                             alert(data.d.Msg);
+                            $("#btnscanawb").removeAttr("disabled");
+                            $("#btnscanawb").html("Submit & Close");
                         }
 
                     }
@@ -533,7 +537,7 @@
                         </table>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" tabindex="31" onclick="submiteAWBno();">Submite & Close</button>
+                        <button type="button" class="btn btn-default" tabindex="31" onclick="submiteAWBno();" id="btnscanawb">Submit & Close</button>
                     </div>
                 </div>
             </div>
